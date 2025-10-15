@@ -24,7 +24,9 @@ buildCmd.Dir = "."
 if err := buildCmd.Run(); err != nil {
 t.Fatalf("failed to build binary: %v", err)
 }
-defer os.Remove("packagepulse_test")
+defer func() {
+_ = os.Remove("packagepulse_test")
+}()
 
 // Start the server process
 ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -120,7 +122,7 @@ t.Log("Server shut down cleanly")
 }
 case <-time.After(5 * time.Second):
 // Force kill if it doesn't exit gracefully
-cmd.Process.Kill()
+_ = cmd.Process.Kill()
 t.Error("Server did not shut down within timeout")
 }
 }
@@ -143,7 +145,9 @@ buildCmd.Dir = "."
 if err := buildCmd.Run(); err != nil {
 t.Fatalf("failed to build binary: %v", err)
 }
-defer os.Remove("packagepulse_test_" + tc.name)
+defer func() {
+_ = os.Remove("packagepulse_test_" + tc.name)
+}()
 
 // Start the server
 cmd := exec.Command("./packagepulse_test_" + tc.name)
@@ -175,7 +179,7 @@ select {
 case <-started:
 t.Logf("Server started, testing %s handling", tc.name)
 case <-time.After(5 * time.Second):
-cmd.Process.Kill()
+_ = cmd.Process.Kill()
 t.Fatalf("Server did not start within timeout")
 }
 
@@ -210,7 +214,7 @@ t.Errorf("Error waiting for process: %v", err)
 t.Logf("Server shut down cleanly after %s", tc.name)
 }
 case <-time.After(5 * time.Second):
-cmd.Process.Kill()
+_ = cmd.Process.Kill()
 t.Errorf("Server did not respond to %s within timeout", tc.name)
 }
 })
