@@ -33,6 +33,12 @@ func main() {
 		logger.Fatal("failed to create server", zap.Error(err))
 	}
 
+	// Log startup message
+	logger.Info("PackagePulse server initialized",
+		zap.String("name", cfg.Name),
+		zap.String("version", cfg.Version),
+		zap.Bool("cache_enabled", cfg.CacheEnabled))
+
 	// Register tools and resources
 	if err := registerFeatures(srv, logger); err != nil {
 		logger.Fatal("failed to register features", zap.Error(err))
