@@ -13,7 +13,9 @@ import (
 func main() {
 	// Setup logger
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	defer func() {
+		_ = logger.Sync()
+	}()
 
 	// Configure server with optimized cache settings
 	cfg := hypermcp.Config{
