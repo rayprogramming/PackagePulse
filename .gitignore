@@ -6,6 +6,8 @@
 *.dylib
 *.test
 *.out
+/PackagePulse
+PackagePulse
 
 # Binary output
 PackagePulse
