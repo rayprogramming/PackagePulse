@@ -7,7 +7,6 @@
 *.test
 *.out
 /PackagePulse
-PackagePulse
 packagepulse
 packagepulse_test*
 
