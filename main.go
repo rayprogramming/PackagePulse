@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rayprogramming/PackagePulse/internal/resources"
 	"github.com/rayprogramming/PackagePulse/internal/tools"
@@ -41,11 +44,33 @@ func main() {
 	// Log registration stats
 	srv.LogRegistrationStats()
 
+	// Setup context with signal handling for clean shutdown
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Handle SIGINT (Ctrl+C) and SIGTERM for graceful shutdown
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	// Goroutine to handle shutdown signal
+	go func() {
+		sig := <-sigChan
+		logger.Info("received shutdown signal", zap.String("signal", sig.String()))
+		cancel()
+	}()
+
 	// Run with stdio transport
-	ctx := context.Background()
+	logger.Info("starting PackagePulse MCP server", zap.String("transport", "stdio"))
 	if err := hypermcp.RunWithTransport(ctx, srv, hypermcp.TransportStdio, logger); err != nil {
+		// Context cancellation is expected during graceful shutdown
+		if ctx.Err() == context.Canceled {
+			logger.Info("server shutdown complete")
+			return
+		}
 		logger.Fatal("server failed", zap.Error(err))
 	}
+
+	logger.Info("server shutdown complete")
 }
 
 func registerFeatures(srv *hypermcp.Server, logger *zap.Logger) error {

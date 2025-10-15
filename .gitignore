@@ -6,6 +6,8 @@
 *.dylib
 *.test
 *.out
+packagepulse
+packagepulse_test*
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
