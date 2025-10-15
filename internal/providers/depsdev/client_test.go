@@ -157,7 +157,8 @@ func TestComputeHealthMetrics(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set up versions with publication dates
-			if tt.name == "excellent package - recent, many versions, docs" {
+			switch tt.name {
+			case "excellent package - recent, many versions, docs":
 				for i := range tt.pkg.Versions {
 					tt.pkg.Versions[i] = VersionInfo{
 						VersionKey:  VersionKey{Version: fmt.Sprintf("1.%d.0", i)},
@@ -166,7 +167,7 @@ func TestComputeHealthMetrics(t *testing.T) {
 						Licenses:    []string{"MIT"},
 					}
 				}
-			} else if tt.name == "good package - regular updates" {
+			case "good package - regular updates":
 				for i := range tt.pkg.Versions {
 					tt.pkg.Versions[i] = VersionInfo{
 						VersionKey:  VersionKey{Version: fmt.Sprintf("2.%d.0", i)},

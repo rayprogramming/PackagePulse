@@ -128,7 +128,9 @@ func (c *Client) Query(ctx context.Context, ecosystem, name, version string) (*Q
 	if err != nil {
 		return nil, fmt.Errorf("execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := io.ReadAll(resp.Body)
@@ -171,7 +173,9 @@ func (c *Client) BatchQuery(ctx context.Context, queries []QueryRequest) ([]Quer
 	if err != nil {
 		return nil, fmt.Errorf("execute batch request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := io.ReadAll(resp.Body)

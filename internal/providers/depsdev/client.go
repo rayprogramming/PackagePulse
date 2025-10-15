@@ -107,7 +107,9 @@ func (c *Client) GetPackage(ctx context.Context, ecosystem, name string) (*Packa
 	if err != nil {
 		return nil, fmt.Errorf("execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, fmt.Errorf("package not found: %s/%s", ecosystem, name)
