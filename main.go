@@ -16,7 +16,9 @@ import (
 func main() {
 	// Setup logger
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	defer func() {
+		_ = logger.Sync()
+	}()
 
 	// Configure server with optimized cache settings
 	cfg := hypermcp.Config{
@@ -35,6 +37,12 @@ func main() {
 	if err != nil {
 		logger.Fatal("failed to create server", zap.Error(err))
 	}
+
+	// Log startup message
+	logger.Info("PackagePulse server initialized",
+		zap.String("name", cfg.Name),
+		zap.String("version", cfg.Version),
+		zap.Bool("cache_enabled", cfg.CacheEnabled))
 
 	// Register tools and resources
 	if err := registerFeatures(srv, logger); err != nil {
